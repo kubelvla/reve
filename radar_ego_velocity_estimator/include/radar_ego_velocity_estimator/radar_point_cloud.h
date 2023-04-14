@@ -50,6 +50,40 @@ struct mmWaveCloudType
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
+struct ArbeCloudType
+{
+  PCL_ADD_POINT4D;
+  union
+  {
+    struct
+    {
+      float power;
+      float doppler;
+    };
+    float data_c[4];
+  };
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+};
+
+struct HuginCloudType
+{
+  PCL_ADD_POINT4D;
+  float range;
+  float elevation;
+  float azimuth;
+  float power;
+  union
+  {
+    struct
+    {
+      float doppler;
+    };
+    float data_c[4];
+  };
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+};
+
+
 bool pcl2msgToPcl(const sensor_msgs::PointCloud2& pcl_msg, pcl::PointCloud<RadarPointCloudType>& scan);
 
 bool pclToPcl2msg(pcl::PointCloud<RadarPointCloudType> scan, sensor_msgs::PointCloud2& pcl_msg);

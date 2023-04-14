@@ -29,13 +29,31 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(RadarPointCloudType,
                                   (float, v_doppler_mps,   v_doppler_mps)
                                   )
 
-
 POINT_CLOUD_REGISTER_POINT_STRUCT (mmWaveCloudType,
+                                  (float, x, x)
+                                  (float, y, y)
+                                  (float, z, z)
+                                  (float, intensity, intensity)
+                                  (float, velocity, velocity))
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (ArbeCloudType,
                                     (float, x, x)
                                     (float, y, y)
                                     (float, z, z)
-                                    (float, intensity, intensity)
-                                    (float, velocity, velocity))
+                                    (float, power, power)
+                                    (float, doppler, doppler))
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (HuginCloudType,
+                                  (float, x, x)
+                                  (float, y, y)
+                                  (float, z, z)
+                                  (float, range, range)
+                                  (float, elevation, elevation)
+                                  (float, azimuth, azimuth)
+                                  (float, power, power)
+                                  (float, doppler, doppler))
+
+
 // clang-format on
 
 bool reve::pcl2msgToPcl(const sensor_msgs::PointCloud2& pcl_msg, pcl::PointCloud<RadarPointCloudType>& scan)
@@ -85,6 +103,58 @@ bool reve::pcl2msgToPcl(const sensor_msgs::PointCloud2& pcl_msg, pcl::PointCloud
       p_.snr_db        = p.intensity;
       p_.v_doppler_mps = p.velocity;
       p_.range         = p.getVector3fMap().norm();
+      p_.noise_db      = -1.;
+      scan.push_back(p_);
+    }
+    return true;
+  }
+  else if (fields.find("x") != fields.end() && fields.find("y") != fields.end() && fields.find("z") != fields.end() &&
+           fields.find("power") != fields.end() && fields.find("doppler") != fields.end())
+  {
+    ROS_INFO_ONCE("[pcl2msgToPcl]: Detected Arbe dataset pcl format!");
+
+    pcl::PointCloud<ArbeCloudType> scan_arbe;
+    pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL(pcl_msg, pcl_pc2);
+    pcl::fromPCLPointCloud2(pcl_pc2, scan_arbe);
+
+    scan.clear();
+    for (const auto& p : scan_arbe)
+    {
+      RadarPointCloudType p_;
+      p_.x             = p.x;
+      p_.y             = p.y;
+      p_.z             = p.z;
+      p_.snr_db        = p.power;
+      p_.v_doppler_mps = p.doppler;
+      p_.range         = p.getVector3fMap().norm();
+      p_.noise_db      = -1.;
+      scan.push_back(p_);
+    }
+    return true;
+  }
+  else if (fields.find("x") != fields.end() && fields.find("y") != fields.end() && fields.find("z") != fields.end() &&
+           fields.find("range") != fields.end() && fields.find("elevation") != fields.end() &&
+           fields.find("azimuth") != fields.end() && fields.find("power") != fields.end() &&
+           fields.find("doppler") != fields.end() )
+  {
+    ROS_INFO_ONCE("[pcl2msgToPcl]: Detected Hugin pcl format!");
+
+    pcl::PointCloud<HuginCloudType> scan_hugin;
+    pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL(pcl_msg, pcl_pc2);
+    pcl::fromPCLPointCloud2(pcl_pc2, scan_hugin);
+
+    scan.clear();
+    for (const auto& p : scan_hugin)
+    {
+      RadarPointCloudType p_;
+      p_.x             = p.x;
+      p_.y             = p.y;
+      p_.z             = p.z;
+      p_.snr_db        = p.power;
+      p_.v_doppler_mps = p.doppler;
+      p_.range         = p.range;
       p_.noise_db      = -1.;
       scan.push_back(p_);
     }
