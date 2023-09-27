@@ -52,17 +52,17 @@ cs_install()
 cs_export(INCLUDE_DIRS include)
 
 ## qtcreator project tree
-FILE(GLOB_RECURSE LibFiles "include/*")
-add_custom_target(headers SOURCES ${LibFiles})
-
-file(GLOB_RECURSE CFG "cfg/*")
-add_custom_target(CFG SOURCES ${CFG})
-
-file(GLOB_RECURSE LAUNCH "launch/*")
-add_custom_target(LAUNCH SOURCES ${LAUNCH})
-
-file(GLOB_RECURSE PYTHON "python/*")
-add_custom_target(PYTHON SOURCES ${PYTHON})
-
-file(GLOB_RECURSE CONFIG "config/*")
-add_custom_target(CONFIG SOURCES ${CONFIG})
+#FILE(GLOB_RECURSE LibFiles "include/*")
+#add_custom_target(headers SOURCES ${LibFiles})
+#
+#file(GLOB_RECURSE CFG "cfg/*")
+#add_custom_target(CFG SOURCES ${CFG})
+#
+#file(GLOB_RECURSE LAUNCH "launch/*")
+#add_custom_target(LAUNCH SOURCES ${LAUNCH})
+#
+#file(GLOB_RECURSE PYTHON "python/*")
+#add_custom_target(PYTHON SOURCES ${PYTHON})
+#
+#file(GLOB_RECURSE CONFIG "config/*")
+#add_custom_target(CONFIG SOURCES ${CONFIG})
