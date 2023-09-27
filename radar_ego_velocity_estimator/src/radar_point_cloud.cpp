@@ -53,6 +53,16 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (HuginCloudType,
                                   (float, power, power)
                                   (float, doppler, doppler))
 
+POINT_CLOUD_REGISTER_POINT_STRUCT (OculiiCloudType,
+                                  (float, x, x)
+                                  (float, y, y)
+                                  (float, z, z)
+                                  (float, Doppler, Doppler)
+                                  (float, Range, Range)
+                                  (float, Power, Power)
+                                  (float, Alpha, Alpha)
+                                  (float, Beta, Beta))
+
 
 // clang-format on
 
@@ -69,6 +79,7 @@ bool reve::pcl2msgToPcl(const sensor_msgs::PointCloud2& pcl_msg, pcl::PointCloud
     fields_str += field.name + ", ";
   }
 
+  // The Reve native type
   if (fields.find("x") != fields.end() && fields.find("y") != fields.end() && fields.find("z") != fields.end() &&
       fields.find("snr_db") != fields.end() && fields.find("noise_db") != fields.end() &&
       fields.find("v_doppler_mps") != fields.end())
@@ -83,6 +94,7 @@ bool reve::pcl2msgToPcl(const sensor_msgs::PointCloud2& pcl_msg, pcl::PointCloud
 
     return true;
   }
+  // The mmwave pointcloud type
   else if (fields.find("x") != fields.end() && fields.find("y") != fields.end() && fields.find("z") != fields.end() &&
            fields.find("intensity") != fields.end() && fields.find("velocity") != fields.end())
   {
@@ -108,6 +120,7 @@ bool reve::pcl2msgToPcl(const sensor_msgs::PointCloud2& pcl_msg, pcl::PointCloud
     }
     return true;
   }
+  // The Arbe pcl type
   else if (fields.find("x") != fields.end() && fields.find("y") != fields.end() && fields.find("z") != fields.end() &&
            fields.find("power") != fields.end() && fields.find("doppler") != fields.end())
   {
@@ -133,6 +146,7 @@ bool reve::pcl2msgToPcl(const sensor_msgs::PointCloud2& pcl_msg, pcl::PointCloud
     }
     return true;
   }
+  // Hugin pcl type
   else if (fields.find("x") != fields.end() && fields.find("y") != fields.end() && fields.find("z") != fields.end() &&
            fields.find("range") != fields.end() && fields.find("elevation") != fields.end() &&
            fields.find("azimuth") != fields.end() && fields.find("power") != fields.end() &&
@@ -155,6 +169,34 @@ bool reve::pcl2msgToPcl(const sensor_msgs::PointCloud2& pcl_msg, pcl::PointCloud
       p_.snr_db        = p.power;
       p_.v_doppler_mps = p.doppler;
       p_.range         = p.range;
+      p_.noise_db      = -1.;
+      scan.push_back(p_);
+    }
+    return true;
+  }
+  // Oculii type
+  else if (fields.find("x") != fields.end() && fields.find("y") != fields.end() && fields.find("z") != fields.end() &&
+           fields.find("Doppler") != fields.end() && fields.find("Range") != fields.end() &&
+           fields.find("Power") != fields.end() && fields.find("Alpha") != fields.end() &&
+           fields.find("Beta") != fields.end() )
+  {
+    ROS_INFO_ONCE("[pcl2msgToPcl]: Detected Oculii Eagle pcl format!");
+
+    pcl::PointCloud<OculiiCloudType> scan_oculii;
+    pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL(pcl_msg, pcl_pc2);
+    pcl::fromPCLPointCloud2(pcl_pc2, scan_oculii);
+
+    scan.clear();
+    for (const auto& p : scan_oculii)
+    {
+      RadarPointCloudType p_;
+      p_.x             = p.x;
+      p_.y             = p.y;
+      p_.z             = p.z;
+      p_.snr_db        = p.Power;
+      p_.v_doppler_mps = p.Doppler;
+      p_.range         = p.Range;
       p_.noise_db      = -1.;
       scan.push_back(p_);
     }

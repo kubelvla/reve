@@ -83,6 +83,24 @@ struct HuginCloudType
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
+struct OculiiCloudType
+{
+  PCL_ADD_POINT4D;
+  float Doppler;
+  float Range;
+  float Power;
+  float Alpha;
+  union
+  {
+    struct
+    {
+      float Beta;
+    };
+    float data_c[4];
+  };
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+};
+
 
 bool pcl2msgToPcl(const sensor_msgs::PointCloud2& pcl_msg, pcl::PointCloud<RadarPointCloudType>& scan);
 
