@@ -122,7 +122,7 @@ bool reve::pcl2msgToPcl(const sensor_msgs::PointCloud2& pcl_msg, pcl::PointCloud
   }
   // The Arbe pcl type
   else if (fields.find("x") != fields.end() && fields.find("y") != fields.end() && fields.find("z") != fields.end() &&
-           fields.find("power") != fields.end() && fields.find("doppler") != fields.end())
+           fields.find("power") != fields.end() && fields.find("doppler") != fields.end() && fields.find("elevation") == fields.end())
   {
     ROS_INFO_ONCE("[pcl2msgToPcl]: Detected Arbe dataset pcl format!");
 
